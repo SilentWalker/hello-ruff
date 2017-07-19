@@ -1,0 +1,18 @@
+{
+    "name": "hello-ruff",
+    "version": "0.1.0",
+    "description": "",
+    "author": "",
+    "main": "src/index.js",
+    "ruff": {
+        "dependencies": {
+            "dht11": "^0.3.6",
+            "lcd1602-pcf8574a-hd44780": "^0.2.7",
+            "mqtt": "^0.1.2",
+            "ruff-v1-infrared-sender": "^0.3.7",
+            "ruff-v1-infrared-receiver": "^0.3.7"
+        },
+        "version": 1,
+        "devDependencies": {}
+    }
+}

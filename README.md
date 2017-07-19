@@ -1,0 +1,2 @@
+# Ruff Application
+# hello-ruff
