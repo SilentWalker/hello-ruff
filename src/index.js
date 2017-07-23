@@ -29,24 +29,14 @@ $.ready(function (error) {
       }
     })
     offlinePrinted = false;
-    printLCD(9, 1, ' Online', function (err) {
-      if (err) {
-        console.log(err);
-        return;
-      }
-    });
+    printLCD(85, 1, ' Online', true);
   })
   client.on('close', function () {
     console.log('client disconnected!');
     isConnected = false;
     if(!offlinePrinted){
       offlinePrinted = true;
-      printLCD(9, 1, 'Offline', function (err) {
-        if (err) {
-          console.log(err);
-          return;
-        }
-      });
+      printLCD(85, 1, 'Offline', true);
     }
   })
   client.on('error', function (err) {
@@ -56,7 +46,8 @@ $.ready(function (error) {
   client.on('message', function (topic, message) {
     message = message.toString();
     console.log('topic : ' + topic + ', message : ' + message);
-    switch (message) {
+    message = message.split('|');
+    switch (message[0]) {
       case 'sendIS':
         if (infraredSignal) {
           $('#irt').send(infraredSignal, function (err) {
@@ -69,14 +60,16 @@ $.ready(function (error) {
         } else {
           console.log('infraredSignal not record yet');
         }
+      break;
+      case 'lcdMsg':
+        printLCD(Number(message[1]), Number(message[2]), message[3].toString(), true);
+      break;
     }
   })
-  $('#lcd').turnOn(function (err, rs) {
+  getEnv(client);
+  setInterval(function () {
     getEnv(client);
-    setInterval(function () {
-      getEnv(client);
-    }, 30 * 1000)
-  })
+  }, 30 * 1000)
   $('#irr').on('data', function (data) {
     infraredSignal = data;
   })
@@ -90,32 +83,15 @@ function getEnv(client) {
     }
     console.log('Temperature is ' + temp)
     if (isConnected) client.publish('temp', temp.toString());
-    printLCD(0, 0, 'Temp ' + temp.toString(), function (err) {
-      if (err) {
-        console.log(err);
-        return;
-      } else {
-        if (Number(temp) > 28) {
-          printLCD(11, 0, '>.<', function (err) {
-            if (err) {
-              console.log(err);
-            }
-          })
-        }else if(Number(temp) > 16){
-          printLCD(11, 0, '0w0', function (err) {
-            if (err) {
-              console.log(err);
-            }
-          })
-        }else{
-          printLCD(11, 0, '-.-', function (err) {
-            if (err) {
-              console.log(err);
-            }
-          })
-        }
-      }
-    });
+    printLCD(0, 0, 'Temp : ' + temp.toString(), true);
+    if (Number(temp) > 28) {
+      printLCD(110, 0, '>.<', true)
+    }else if(Number(temp) > 16){
+      printLCD(110, 0, '0w0', true)
+    }else{
+      printLCD(110, 0, '-.-', true)
+    }
+
   })
   $('#dht').getRelativeHumidity(function (err, humi) {
     if (err) {
@@ -124,29 +100,14 @@ function getEnv(client) {
     }
     console.log('Humidity is ' + humi);
     if (isConnected) client.publish('humi', humi.toString());
-    printLCD(0, 1, 'Humi ' + humi.toString(), function (err) {
-      if (err) {
-        console.log(err);
-        return;
-      }
-    });
+    printLCD(0, 1, 'Humi : ' + humi.toString(), true);
   })
 }
 
-function printLCD(x, y, text, cb) {
-  $('#lcd').setCursor(x, y, function (err, rs) {
-    if (err) {
-      console.log(err)
-      cb(err)
-    } else {
-      $('#lcd').print(text, function (err, rs) {
-        if (err) {
-          console.log(err)
-          cb(err);
-        } else {
-          cb(null)
-        }
-      })
-    }
-  })
+function printLCD(x, y, text, isLittleChar) {
+  try{
+    $('#lcd').print(x, y, text, isLittleChar);
+  }catch(err){
+    console.log(err);
+  }
 }
