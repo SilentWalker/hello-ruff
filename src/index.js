@@ -64,6 +64,15 @@ $.ready(function (error) {
       case 'lcdMsg':
         printLCD(Number(message[1]), Number(message[2]), message[3].toString(), true);
       break;
+      case 'ledMsg':
+        lightUp(message[1], message[2], message[3]);
+      break;
+      case 'soundEnable' : 
+        $('#sound').enable();
+      break;
+      case 'soundDisable' : 
+        $('#sound').disable();
+      break;
     }
   })
   getEnv(client);
@@ -72,6 +81,10 @@ $.ready(function (error) {
   }, 30 * 1000)
   $('#irr').on('data', function (data) {
     infraredSignal = data;
+  })
+  $('#sound').on('sound', function (){
+    console.log('sound detected')
+    client.publish('sound');
   })
 });
 
@@ -111,3 +124,13 @@ function printLCD(x, y, text, isLittleChar) {
     console.log(err);
   }
 }
+
+function lightUp(r,g,b){
+  try{
+    $('#led').setRGB([r,g,b]);
+  }catch(err){
+    console.log(err);
+  }
+  
+}
+

@@ -10,7 +10,9 @@
             "mqtt": "^0.1.2",
             "ruff-v1-infrared-sender": "^0.3.7",
             "ruff-v1-infrared-receiver": "^0.3.7",
-            "ssd1306": "^2.1.0"
+            "ssd1306": "^2.1.0",
+            "ky-016": "^2.0.5",
+            "sound-01": "^1.1.6"
         },
         "version": 1,
         "devDependencies": {}
